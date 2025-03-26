@@ -1,0 +1,41 @@
+# 데이터 로드
+df_chao1 = pd.read_csv(
+    "/home/microbiome/projects/ibd/data/processed/amplicon/diversity/exported_alpha_diversity/alpha_chao1_vector.tsv", sep="\t", index_col=0)
+df_chao1 = df_chao1.merge(metadata, how='left', left_on=df_chao1.index, right_on='label')
+df_chao1 = df_chao1.loc[:, ['label', 'chao1', 'group1']]
+
+# 박스플롯 색상 설정
+order = ['Healthy', 'Prevent', 'Predict']
+custom_palette = {'Healthy': '#3E9380', 'Prevent': '#FFC000', 'Predict': '#EC6D64'}
+
+# 아웃라이어의 색상 정의
+flierprops = {
+    "marker": "o",
+    "markersize": 3,
+    "alpha": 0.8,
+}
+
+# 박스플롯 그리기 (patch_artist=True 추가)
+plt.figure(figsize=(3, 5))
+ax = sns.boxplot(
+    x='group1', 
+    y='chao1', 
+    data=df_chao1, 
+    order=order, 
+    palette=custom_palette,
+    width=0.6, 
+    linewidth=1.5,
+    flierprops = flierprops
+)
+
+# 제목 및 축 레이블
+plt.title('Alpha Diversity Boxplot')
+plt.xlabel('Group')
+plt.ylabel('Chao1')
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+folder_path = "/home/microbiome/projects/ibd/analysis/notebooks/alpha_diversity/results"
+os.makedirs(folder_path, exist_ok=True)  # 폴더가 없으면 생성
+#plt.savefig(os.path.join(folder_path, "chao1.pdf"), format='pdf', bbox_inches='tight')
+
+plt.show()
